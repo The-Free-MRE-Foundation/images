@@ -13,6 +13,7 @@ const { exec } = require('child_process');
 
 const WORK_DIR = process.env['WD'];
 const API_KEY = process.env['API_KEY'];
+const ENGINE = process.env['ENGINE'];
 
 enum Engines {
         CRAIYON = 'CRAIYON',
@@ -229,7 +230,7 @@ export default class App {
                                                 user.prompt('Query can\'t be empty');
                                                 return;
                                         }
-                                        this.tti(dialog.text, user);
+                                        this.tti(dialog.text, user, ENGINE ? ENGINE as Engines : Engines.CRAIYON);
                                 }
                         });
                 });
@@ -310,26 +311,28 @@ export default class App {
                 });
         }
 
-        private tti(query: string, user: User, engine: Engines = Engines.STABLE_HORDE) {
+        private tti(query: string, user: User, engine: Engines) {
                 if (this.running) return;
                 this.clip = 'activate';
                 this.text = `${user.name} prompted: ${query}`;
                 this.clear();
                 this.running = true;
 
-                const prompt = `${query.replace(/[^a-zA-Z ]/g, ' ')}`;
+                const prompt = `${query.replace(/[^a-zA-Z ,]/g, ' ')}`;
+                console.log(prompt);
                 const h = sha256(prompt);
 
                 let cmd: string;
                 switch (engine) {
                         case Engines.CRAIYON:
-                                cmd = `python craiyon.py ${prompt}`;
+                                cmd = `python _craiyon.py ${prompt}`;
                                 break;
                         case Engines.STABLE_HORDE:
                                 cmd = `mkdir -p public/${h}; cwd=$(pwd); cd $(realpath ${WORK_DIR}); python cli_request.py --horde=https://stablehorde.net -n 9 -p '${prompt}' -w 512 -l 512 -s 7 -f ${h}.png -q --api_key '${API_KEY}'; ls *_${h}.png | while read line; do dst=$cwd/public/${h}/image-$(($(echo $line | cut -d_ -f1)+1)).png; mv $line $dst; done; echo ${prompt} >>$cwd/public/${h}/query`;
                                 break;
                 }
 
+                console.log(cmd);
                 exec(cmd, async (error: string, stdout: string, stderr: string) => {
                         this.onResult(error, stdout, stderr, query);
                 });
