@@ -1,0 +1,17 @@
+diff --git a/cli_request.py b/cli_request.py
+index 00170bb..412fccc 100644
+--- a/cli_request.py
++++ b/cli_request.py
+@@ -75,10 +75,8 @@ def generate():
+             base64_bytes = b64img.encode('utf-8')
+             img_bytes = base64.b64decode(base64_bytes)
+             img = Image.open(BytesIO(img_bytes))
+-            if len(results) > 1:
+-                final_filename = f"{iter}_{filename}"
+-            img.save(final_filename)
+-            logger.info(f"Saved {final_filename}")
++            img.save(f"{iter}_{final_filename}")
++            logger.info(f"Saved {iter}_{final_filename}")
+     else:
+         logger.error(submit_req.text)
+ 
