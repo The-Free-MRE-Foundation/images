@@ -328,7 +328,7 @@ export default class App {
                                 cmd = `python _craiyon.py ${prompt}`;
                                 break;
                         case Engines.STABLE_HORDE:
-                                cmd = `mkdir -p public/${h}; cwd=$(pwd); cd $(realpath ${WORK_DIR}); python cli_request.py --horde=https://stablehorde.net -n 9 -p '${prompt}' -w 512 -l 512 -s 7 -f ${h}.png -q --api_key '${API_KEY}'; ls *_${h}.png | while read line; do dst=$cwd/public/${h}/image-$(($(echo $line | cut -d_ -f1)+1)).png; mv $line $dst; done; echo ${prompt} >>$cwd/public/${h}/query`;
+                                cmd = `test -d public/${h} && exit; mkdir -p public/${h}; cwd=$(pwd); cd $(realpath ${WORK_DIR}); python cli_request.py --horde=https://stablehorde.net -n 9 -p '${prompt}' -w 512 -l 512 -s 7 -f ${h}.png -q --api_key '${API_KEY}'; ls *_${h}.png | while read line; do dst=$cwd/public/${h}/image-$(($(echo $line | cut -d_ -f1)+1)).png; mv $line $dst; done; echo ${prompt} >>$cwd/public/${h}/query`;
                                 break;
                 }
 
